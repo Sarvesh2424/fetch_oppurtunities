@@ -35,7 +35,7 @@ const fetchLatestOpportunities = async () => {
     const allJobs = res.data.jobs; // <- FIXED
 
     const internships = allJobs
-      .filter((job) => /internship|intern|junior/i.test(job.title))
+      .filter((job) => /internship|intern|junior|fresher/i.test(job.title))
       .map((job) => ({
         title: job.title,
         company: job.company_name,
