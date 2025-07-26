@@ -61,18 +61,24 @@ const fetchLatestOpportunities = async () => {
     });
 
     const hackathons = await page.evaluate(() => {
-      const cards = document.querySelectorAll(".hackathon-tile");
+      const cards = document.querySelectorAll('[data-cy="event-tile"]');
       const data = [];
 
       cards.forEach((card) => {
-        const title = card.querySelector(".title")?.textContent?.trim();
-        const url =
-          "https://devpost.com" + card.querySelector("a")?.getAttribute("href");
+        const title = card
+          .querySelector('[data-cy="event-name"]')
+          ?.textContent?.trim();
+        const href = card.querySelector("a")?.getAttribute("href");
+        const url = href?.startsWith("http")
+          ? href
+          : `https://devpost.com${href}`;
         const description = card
-          .querySelector(".challenge-description")
+          .querySelector('[data-cy="event-subtitle"]')
           ?.textContent?.trim();
         const location =
-          card.querySelector(".location")?.textContent?.trim() || "Online";
+          card
+            .querySelector('[data-cy="event-location"]')
+            ?.textContent?.trim() || "Online";
 
         if (title && url) {
           data.push({
@@ -92,9 +98,11 @@ const fetchLatestOpportunities = async () => {
 
     await browser.close();
     opportunities.push(...hackathons);
-    console.log("✅ Devpost hackathons fetched successfully");
+    console.log(
+      `✅ Devpost hackathons fetched successfully: ${hackathons.length}`
+    );
   } catch (err) {
-    console.error("❌ Devpost RSS fetch failed:", err.message);
+    console.error("❌ Devpost scraping failed:", err.message);
   }
 
   return opportunities;
